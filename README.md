@@ -15,4 +15,4 @@ Sincerely,
 
 Matthew Ritter
 CaptainDooter
-​Ritter.1442@osu.edu
+Ritter.1442@osu.edu
