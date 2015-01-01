@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DemoHelloQueue.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="IrcServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">irc.twitch.tv</Value>
+    </Setting>
+    <Setting Name="IrcChannel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#cohhcarnage</Value>
+    </Setting>
+    <Setting Name="IrcUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">captaindooter</Value>
+    </Setting>
+    <Setting Name="IrcPass" Type="System.String" Scope="User">
+      <Value Profile="(Default)">oauth:cxq5ric38pl1bdbwkua6itdb9bnnjf</Value>
+    </Setting>
+    <Setting Name="IrcPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6667</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
