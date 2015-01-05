@@ -10,6 +10,8 @@ namespace DemoHelloQueue
     public partial class HelloQueue : Form
     {
         private Thread TwitchIRCThread;
+        public bool useUserList = false;
+        public bool formIsClosing = false;
         TwitchIRC helloQueueConn;
         List<string> userList;
         public delegate void dgAddToList(object sender, IRCEventArgs e);
@@ -29,20 +31,42 @@ namespace DemoHelloQueue
             else {
                 if (!String.IsNullOrEmpty(filterTxtBox.Text))
                 {
-                    if (!userList.Contains(e.Username) && e.Message.Contains(filterTxtBox.Text))
+                    if (useUserList)
                     {
-                        userList.Add(e.Username);
-                        listBox1.Items.Add(e.Username + ": " + e.Message);
-                        listBox1.Items.Add("-------------------------------------------------------------------");
-                        listBox1.Update();
+                        if (!userList.Contains(e.Username) && (e.Message.Contains(filterTxtBox.Text) || e.Username.Contains(filterTxtBox.Text)))
+                        {
+                            userList.Add(e.Username);
+                            listBox1.Items.Add(e.Username + ": " + e.Message);
+                            listBox1.Items.Add("-------------------------------------------------------------------");
+                            listBox1.Update();
+                            System.Media.SystemSounds.Asterisk.Play();
+                        }
+                    }
+                    else
+                    {
+                        if (e.Message.Contains(filterTxtBox.Text) || e.Username.Contains(filterTxtBox.Text))
+                        {
+                            listBox1.Items.Add(e.Username + ": " + e.Message);
+                            listBox1.Items.Add("-------------------------------------------------------------------");
+                            listBox1.Update();
+                            System.Media.SystemSounds.Asterisk.Play();
+                        }
                     }
                 }
-                else if (!userList.Contains(e.Username))
+                else if (useUserList && !userList.Contains(e.Username))
                 {
                     userList.Add(e.Username);
                     listBox1.Items.Add(e.Username + ": " + e.Message);
                     listBox1.Items.Add("-------------------------------------------------------------------");
                     listBox1.Update();
+                    System.Media.SystemSounds.Asterisk.Play();
+                }
+                else
+                {
+                    listBox1.Items.Add(e.Username + ": " + e.Message);
+                    listBox1.Items.Add("-------------------------------------------------------------------");
+                    listBox1.Update();
+                    System.Media.SystemSounds.Asterisk.Play();
                 }
             }
         }
@@ -53,10 +77,17 @@ namespace DemoHelloQueue
             {
                 helloQueueConn = new TwitchIRC(Globals.IrcServer, Globals.IrcPort, Globals.IrcUser, Globals.IrcChan, Globals.IrcPass);
                 helloQueueConn.OnGotMessage += new TwitchIRC.RecievedMessage(sendToQueue);
+                helloQueueConn.ConnectionLost += new TwitchIRC.lostConnection(lostConnection);
                 TwitchIRCThread = new Thread(() => helloQueueConn.Connect());
                 TwitchIRCThread.Start();
             }
 
+        }
+
+        private void lostConnection(object sender, EventArgs e)
+        {
+            if(!formIsClosing)
+            MessageBox.Show("Could not connect/lost connection to IRC Server!");
         }
 
         private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -66,18 +97,12 @@ namespace DemoHelloQueue
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            formIsClosing = true;
             if (TwitchIRCThread != null && TwitchIRCThread.IsAlive)
             {
                 helloQueueConn.RequestStop();
                 TwitchIRCThread.Join();
             }
-
-            Properties.Settings.Default.IrcServer = Globals.IrcServer;
-            Properties.Settings.Default.IrcUser = Globals.IrcUser;
-            Properties.Settings.Default.IrcChannel= Globals.IrcChan;
-            Properties.Settings.Default.IrcPass = Globals.IrcPass;
-            Properties.Settings.Default.IrcPort = Globals.IrcPort;
-            Properties.Settings.Default.Save();
         }
 
         private void configureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -113,13 +138,25 @@ namespace DemoHelloQueue
         private void button1_Click(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
-            userList.Clear();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             About aboutForm = new About();
             aboutForm.Show();
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            userList.Clear();
+        }
+
+        private void noDupUsersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (noDupUsersToolStripMenuItem.Checked)
+                useUserList = true;
+            else
+                useUserList = false;
         }
     }
 }

@@ -27,16 +27,29 @@ namespace DemoHelloQueue
             if (serverTxtBox.Text == "irc.twitch.tv" && !oauthTxtBox.Text.Contains("oauth:"))
             {
                 MessageBox.Show("Twitch IRC requires an oauth token as a password. Please enter the oauth token beginning with \"oauth:\" followed by the generated code");
+                return;
             }
 
             if (String.IsNullOrEmpty(serverTxtBox.Text))
+            {
                 MessageBox.Show("Server is required.");
+                return;
+            }
             else if (String.IsNullOrEmpty(userTxtBox.Text))
+            {
                 MessageBox.Show("User is required.");
+                return;
+            }
             else if (String.IsNullOrEmpty(channelTxtBox.Text))
+            {
                 MessageBox.Show("Channel is required.");
+                return;
+            }
             else if (String.IsNullOrEmpty(portTxtBox.Text))
+            {
                 MessageBox.Show("Port is required.");
+                return;
+            }
 
             try
             {
@@ -45,6 +58,12 @@ namespace DemoHelloQueue
                 Globals.IrcChan = channelTxtBox.Text;
                 Globals.IrcUser = userTxtBox.Text;
                 Globals.IrcPass = oauthTxtBox.Text;
+                Properties.Settings.Default.IrcServer = Globals.IrcServer;
+                Properties.Settings.Default.IrcUser = Globals.IrcUser;
+                Properties.Settings.Default.IrcChannel = Globals.IrcChan;
+                Properties.Settings.Default.IrcPass = Globals.IrcPass;
+                Properties.Settings.Default.IrcPort = Globals.IrcPort;
+                Properties.Settings.Default.Save();
             }
             catch (Exception ex)
             {
@@ -52,6 +71,7 @@ namespace DemoHelloQueue
                     MessageBox.Show("Port must be a valid port number.");
                 else
                     MessageBox.Show("Exception was thrown: " + ex);
+                return;
             }
 
             this.Close();

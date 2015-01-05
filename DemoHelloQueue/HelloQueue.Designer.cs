@@ -40,6 +40,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.filterTxtBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noDupUsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,7 +95,9 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.configureToolStripMenuItem});
+            this.configureToolStripMenuItem,
+            this.resetToolStripMenuItem,
+            this.noDupUsersToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -101,7 +105,7 @@
             // configureToolStripMenuItem
             // 
             this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
-            this.configureToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.configureToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.configureToolStripMenuItem.Text = "Configure";
             this.configureToolStripMenuItem.Click += new System.EventHandler(this.configureToolStripMenuItem_Click);
             // 
@@ -116,7 +120,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -145,6 +149,21 @@
             this.button1.Text = "Clear";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // resetToolStripMenuItem
+            // 
+            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.resetToolStripMenuItem.Text = "Reset";
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
+            // 
+            // noDupUsersToolStripMenuItem
+            // 
+            this.noDupUsersToolStripMenuItem.CheckOnClick = true;
+            this.noDupUsersToolStripMenuItem.Name = "noDupUsersToolStripMenuItem";
+            this.noDupUsersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.noDupUsersToolStripMenuItem.Text = "No Dup. Users";
+            this.noDupUsersToolStripMenuItem.Click += new System.EventHandler(this.noDupUsersToolStripMenuItem_Click);
             // 
             // HelloQueue
             // 
@@ -184,6 +203,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox filterTxtBox;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noDupUsersToolStripMenuItem;
     }
 }
 

@@ -24,7 +24,9 @@ namespace DemoHelloQueue {
 
         #region Public Variables
         public delegate void RecievedMessage(object sender, IRCEventArgs e);
+        public delegate void lostConnection(object sender, EventArgs e);
         public event RecievedMessage OnGotMessage;
+        public event lostConnection ConnectionLost;
         #endregion
 
         #region Properties
@@ -109,8 +111,11 @@ namespace DemoHelloQueue {
                 this.IrcWriter = new StreamWriter(this.IrcStream);
 
                 // Authenticate
-                this.IrcWriter.WriteLine(String.Format("PASS {0}", this.ircPass));
-                this.IrcWriter.Flush();
+                if (!String.IsNullOrEmpty(this.ircPass))
+                {
+                    this.IrcWriter.WriteLine(String.Format("PASS {0}", this.ircPass));
+                    this.IrcWriter.Flush();
+                }
                 this.IrcWriter.WriteLine(String.Format("NICK {0}", this.ircNick));
                 this.IrcWriter.Flush();
                 this.IrcWriter.WriteLine(String.Format("JOIN {0}", this.ircChannel));
@@ -129,6 +134,7 @@ namespace DemoHelloQueue {
                     string ircMessage;
                     while ((ircMessage = this.IrcReader.ReadLine()) != null && shouldRun)
                     {
+                        //Debug
                         Console.Out.WriteLine(ircMessage);
 
                         string[] messageParts = new string[ircMessage.Split(' ').Length];
@@ -136,20 +142,25 @@ namespace DemoHelloQueue {
                         if (messageParts[0].Substring(0, 1) == ":")
                         {
                             messageParts[0] = messageParts[0].Remove(0, 1);
-                        }
 
-                        if (messageParts[0] == "PING")
-                        {
-                            // Server PING, send PONG back
-                            this.IrcPing(messageParts);
-                        }
-                        else
-                        {
-                            if (ircMessage.Contains("PRIVMSG"))
+                            if (ircMessage.Contains("Login unsuccessful"))
+                                throw new Exception(ircMessage);
+                            int resultNumber;
+                            if (int.TryParse(messageParts[1], out resultNumber))
                             {
-                                string userName = ircMessage.Substring(ircMessage.IndexOf(":") + 1, ircMessage.IndexOf("!") - 1);
-                                if (userName != "cohhilitionbot")
+                                if (resultNumber <= 553 && resultNumber >= 400)
+                                    throw new Exception(ircMessage);
+                            }
+                            if (messageParts[0] == "PING")
+                            {
+                                // Server PING, send PONG back
+                                this.IrcPing(messageParts);
+                            }
+                            else
+                            {
+                                if (ircMessage.Contains("PRIVMSG"))
                                 {
+                                    string userName = ircMessage.Substring(ircMessage.IndexOf(":") + 1, ircMessage.IndexOf("!") - 1);
                                     string contents = ircMessage.Substring(ircMessage.IndexOf(Globals.IrcChan.ToLower()) + Globals.IrcChan.Length + 2);
 
                                     if (OnGotMessage != null)
@@ -161,25 +172,26 @@ namespace DemoHelloQueue {
                             }
                         }
                     }
-
                     this.IrcWriter.Close();
                     this.IrcReader.Close();
                     this.IrcConnection.Close();
+                    //Debug
+                    Console.Out.WriteLine("Connection to Twitch is lost");
+                    ConnectionLost(this, new EventArgs());
                     return;
                 }
          }
          catch(Exception ex)
          {
-             if (ex.InnerException != null && ex.InnerException.HResult == -2147467259)
-             {
-                 MessageBox.Show("Lost connection with IRC Server!");
-             }
              this.IrcWriter.Close();
              this.IrcReader.Close();
              this.IrcConnection.Close();
+             //debug
+             Console.Out.WriteLine("Connection to IRC server is lost: " + ex.Message);
+             ConnectionLost(this, new EventArgs());
              return;
          }
-		}
+        }
 
         public void RequestStop()
         {
