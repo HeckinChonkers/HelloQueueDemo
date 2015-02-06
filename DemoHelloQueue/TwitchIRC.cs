@@ -19,14 +19,16 @@ namespace DemoHelloQueue {
 		private NetworkStream ircStream;
 		private StreamWriter ircWriter;
 		private StreamReader ircReader;
-        private bool shouldRun;
 		#endregion
 
         #region Public Variables
         public delegate void RecievedMessage(object sender, IRCEventArgs e);
         public delegate void lostConnection(object sender, EventArgs e);
+        public delegate void gotConnection(object sender, EventArgs e);
         public event RecievedMessage OnGotMessage;
         public event lostConnection ConnectionLost;
+	    public bool isConnected = false;
+	    public bool shouldRun = false;
         #endregion
 
         #region Properties
@@ -73,13 +75,13 @@ namespace DemoHelloQueue {
 		} /* IrcConnection */
 		
 		public NetworkStream IrcStream {
-			get { return this.ircStream; }
-			set { this.ircStream = value; }
+			get { return ircStream; }
+			set { ircStream = value; }
 		} /* IrcStream */
 		
 		public StreamWriter IrcWriter {
-			get { return this.ircWriter; }
-			set { this.ircWriter = value; }
+			get { return ircWriter; }
+			set { ircWriter = value; }
 		} /* IrcWriter */
 		
 		public StreamReader IrcReader {
@@ -109,7 +111,6 @@ namespace DemoHelloQueue {
                 this.IrcStream = this.IrcConnection.GetStream();
                 this.IrcReader = new StreamReader(this.IrcStream);
                 this.IrcWriter = new StreamWriter(this.IrcStream);
-
                 // Authenticate
                 if (!String.IsNullOrEmpty(this.ircPass))
                 {
@@ -132,19 +133,27 @@ namespace DemoHelloQueue {
                 while (true)
                 {
                     string ircMessage;
-                    while ((ircMessage = this.IrcReader.ReadLine()) != null && shouldRun)
+                    while (shouldRun == true)
                     {
+                        ircMessage = IrcReader.ReadLine();
+
                         //Debug
                         Console.Out.WriteLine(ircMessage);
 
                         string[] messageParts = new string[ircMessage.Split(' ').Length];
                         messageParts = ircMessage.Split(' ');
-                        if (messageParts[0].Substring(0, 1) == ":")
+                        if (messageParts[0].Substring(0, 1) == ":" || messageParts[0] == "PING")
                         {
+                            if (messageParts[0] != "PING")
                             messageParts[0] = messageParts[0].Remove(0, 1);
 
                             if (ircMessage.Contains("Login unsuccessful"))
                                 throw new Exception(ircMessage);
+                            else if (ircMessage.Contains((":Welcome, GLHF!")))
+                            {
+                                GotConnection(this, new EventArgs());
+                                isConnected = true;
+                            }
                             int resultNumber;
                             if (int.TryParse(messageParts[1], out resultNumber))
                             {
@@ -172,9 +181,12 @@ namespace DemoHelloQueue {
                             }
                         }
                     }
+
+                    isConnected = false;
                     this.IrcWriter.Close();
                     this.IrcReader.Close();
                     this.IrcConnection.Close();
+                    
                     //Debug
                     Console.Out.WriteLine("Connection to Twitch is lost");
                     ConnectionLost(this, new EventArgs());
@@ -183,15 +195,27 @@ namespace DemoHelloQueue {
          }
          catch(Exception ex)
          {
+             isConnected = false;
              this.IrcWriter.Close();
              this.IrcReader.Close();
              this.IrcConnection.Close();
+             
              //debug
              Console.Out.WriteLine("Connection to IRC server is lost: " + ex.Message);
-             ConnectionLost(this, new EventArgs());
+             if (!ex.Message.Contains("WSACancelBlockingCall"))
+                ConnectionLost(this, new EventArgs());
              return;
          }
         }
+
+	    public void SendMessage(string messageToSend)
+	    {
+	        if (isConnected)
+	        {
+                IrcWriter.WriteLine("PRIVMSG " + this.ircChannel + " :" + messageToSend);
+                IrcWriter.Flush();
+	        }
+	    }
 
         public void RequestStop()
         {
@@ -212,5 +236,7 @@ namespace DemoHelloQueue {
 		} /* IrcPing */
 		#endregion
 		#endregion
-	}
+
+        public gotConnection GotConnection { get; set; }
+    }
 }

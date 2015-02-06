@@ -12,7 +12,8 @@ namespace DemoHelloQueue
         private Thread TwitchIRCThread;
         public bool useUserList = false;
         public bool formIsClosing = false;
-        TwitchIRC helloQueueConn;
+        public bool enableDing = false;
+        TwitchIRC _helloQueueConn;
         List<string> userList;
         public delegate void dgAddToList(object sender, IRCEventArgs e);
 
@@ -24,50 +25,53 @@ namespace DemoHelloQueue
 
         private void sendToQueue(object sender, IRCEventArgs e)
         {
-            if (listBox1.InvokeRequired)
+            if (richTextBox1.InvokeRequired)
             {
                 this.BeginInvoke(new dgAddToList(sendToQueue), new object[] { sender, e });
             }
             else {
-                if (!String.IsNullOrEmpty(filterTxtBox.Text))
+
+                if (!useUserList && String.IsNullOrEmpty(filterTxtBox.Text))
                 {
-                    if (useUserList)
-                    {
-                        if (!userList.Contains(e.Username) && (e.Message.Contains(filterTxtBox.Text) || e.Username.Contains(filterTxtBox.Text)))
-                        {
-                            userList.Add(e.Username);
-                            listBox1.Items.Add(e.Username + ": " + e.Message);
-                            listBox1.Items.Add("-------------------------------------------------------------------");
-                            listBox1.Update();
-                            System.Media.SystemSounds.Asterisk.Play();
-                        }
-                    }
-                    else
-                    {
-                        if (e.Message.Contains(filterTxtBox.Text) || e.Username.Contains(filterTxtBox.Text))
-                        {
-                            listBox1.Items.Add(e.Username + ": " + e.Message);
-                            listBox1.Items.Add("-------------------------------------------------------------------");
-                            listBox1.Update();
-                            System.Media.SystemSounds.Asterisk.Play();
-                        }
-                    }
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Bold);
+                    richTextBox1.AppendText(e.Username + ": ");
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Regular);
+                    richTextBox1.AppendText(e.Message + "\r\n");
+                    if(!richTextBox1.ContainsFocus)
+                        richTextBox1.ScrollToCaret();
+                    if (enableDing)
+                        System.Media.SystemSounds.Asterisk.Play();
                 }
-                else if (useUserList && !userList.Contains(e.Username))
+                else if (useUserList && String.IsNullOrEmpty(filterTxtBox.Text) && !userList.Contains(e.Username))
                 {
                     userList.Add(e.Username);
-                    listBox1.Items.Add(e.Username + ": " + e.Message);
-                    listBox1.Items.Add("-------------------------------------------------------------------");
-                    listBox1.Update();
-                    System.Media.SystemSounds.Asterisk.Play();
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Bold);
+                    richTextBox1.AppendText(e.Username + ": ");
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Regular);
+                    richTextBox1.AppendText(e.Message + "\r\n");
+                    if (enableDing)
+                        System.Media.SystemSounds.Asterisk.Play();
                 }
-                else
+                else if (!useUserList && !String.IsNullOrEmpty(filterTxtBox.Text) && (e.Message.Contains(filterTxtBox.Text) || e.Username.Contains(filterTxtBox.Text)))
                 {
-                    listBox1.Items.Add(e.Username + ": " + e.Message);
-                    listBox1.Items.Add("-------------------------------------------------------------------");
-                    listBox1.Update();
-                    System.Media.SystemSounds.Asterisk.Play();
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Bold);
+                    richTextBox1.AppendText(e.Username + ": ");
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Regular);
+                    richTextBox1.AppendText(e.Message + "\r\n");
+                    if (enableDing)
+                        System.Media.SystemSounds.Asterisk.Play();
                 }
+                else if (useUserList && !String.IsNullOrEmpty(filterTxtBox.Text) && !userList.Contains(e.Username) && (e.Message.Contains(filterTxtBox.Text) || e.Username.Contains(filterTxtBox.Text)))
+                {
+                    userList.Add(e.Username);
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Bold);
+                    richTextBox1.AppendText(e.Username + ": ");
+                    richTextBox1.SelectionFont = new Font(richTextBox1.Font, FontStyle.Regular);
+                    richTextBox1.AppendText(e.Message + "\r\n");
+                    if (enableDing)
+                        System.Media.SystemSounds.Asterisk.Play();
+                }
+
             }
         }
 
@@ -75,19 +79,36 @@ namespace DemoHelloQueue
         {
             if (TwitchIRCThread == null || !TwitchIRCThread.IsAlive)
             {
-                helloQueueConn = new TwitchIRC(Globals.IrcServer, Globals.IrcPort, Globals.IrcUser, Globals.IrcChan, Globals.IrcPass);
-                helloQueueConn.OnGotMessage += new TwitchIRC.RecievedMessage(sendToQueue);
-                helloQueueConn.ConnectionLost += new TwitchIRC.lostConnection(lostConnection);
-                TwitchIRCThread = new Thread(() => helloQueueConn.Connect());
+                _helloQueueConn = new TwitchIRC(Globals.IrcServer, Globals.IrcPort, Globals.IrcUser, Globals.IrcChan, Globals.IrcPass);
+                _helloQueueConn.OnGotMessage += new TwitchIRC.RecievedMessage(sendToQueue);
+                _helloQueueConn.ConnectionLost += new TwitchIRC.lostConnection(lostConnection);
+                _helloQueueConn.GotConnection += new TwitchIRC.gotConnection(gotConnect);
+                TwitchIRCThread = new Thread(() => _helloQueueConn.Connect());
                 TwitchIRCThread.Start();
             }
 
         }
 
+        private void gotConnect(object sender, EventArgs e)
+        {
+            this.BeginInvoke(new MethodInvoker(delegate()
+            {
+                ConnectTwitchMenuItem.Text = "Connected!";
+            }
+            ));
+        }
+
         private void lostConnection(object sender, EventArgs e)
         {
-            if(!formIsClosing)
-            MessageBox.Show("Could not connect/lost connection to IRC Server!");
+            this.BeginInvoke(new MethodInvoker(delegate()
+            {
+                if (!formIsClosing)
+                {
+                    MessageBox.Show("Could not connect/lost connection to IRC Server!");
+                    ConnectTwitchMenuItem.Text = "Connect to Twitch";
+                }
+            }
+            ));
         }
 
         private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -98,9 +119,11 @@ namespace DemoHelloQueue
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             formIsClosing = true;
+            _helloQueueConn.shouldRun = false;
+            _helloQueueConn.IrcReader.Close();
             if (TwitchIRCThread != null && TwitchIRCThread.IsAlive)
             {
-                helloQueueConn.RequestStop();
+                _helloQueueConn.RequestStop();
                 TwitchIRCThread.Join();
             }
         }
@@ -120,6 +143,8 @@ namespace DemoHelloQueue
              Globals.IrcPort = Properties.Settings.Default.IrcPort;
         }
 
+        /*
+         * This commented code is required for making a custom word wrap type entry in listbox1
         private void listBox1_MeasureItem(object sender, MeasureItemEventArgs e)
         {
             e.ItemHeight = (int)e.Graphics.MeasureString(listBox1.Items[e.Index].ToString(), listBox1.Font, listBox1.Width).Height;
@@ -134,10 +159,13 @@ namespace DemoHelloQueue
                 e.Graphics.DrawString(listBox1.Items[e.Index].ToString(), e.Font, new SolidBrush(e.ForeColor), e.Bounds);
             }
         }
+        */
 
         private void button1_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Clear();
+            //textBox1.Clear();
+            richTextBox1.Clear();
+            richTextBox1.Update();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -157,6 +185,30 @@ namespace DemoHelloQueue
                 useUserList = true;
             else
                 useUserList = false;
+        }
+
+        private void dingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dingToolStripMenuItem.Checked)
+                enableDing = true;
+            else
+                enableDing = false;
+        }
+
+        private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
+        }
+
+        private void richTextBox2_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (richTextBox2.Text.Contains("\n"))
+                    richTextBox2.Text.Replace("\n", "");
+                _helloQueueConn.SendMessage(richTextBox2.Text.Trim());
+                richTextBox2.Clear();
+            }
         }
     }
 }
