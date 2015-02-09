@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.commandTxt = new System.Windows.Forms.TextBox();
@@ -36,6 +37,9 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.commandHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.resultHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.rightClickContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.rightClickContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -94,6 +98,8 @@
             this.listView1.TabIndex = 6;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             // 
             // commandHeader
             // 
@@ -104,6 +110,23 @@
             // 
             this.resultHeader.Text = "Result";
             this.resultHeader.Width = 436;
+            // 
+            // rightClickContext
+            // 
+            this.rightClickContext.AllowDrop = true;
+            this.rightClickContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.rightClickContext.Name = "rightClickContext";
+            this.rightClickContext.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.rightClickContext.Size = new System.Drawing.Size(168, 26);
+            this.rightClickContext.Text = "Delete Command";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.toolStripMenuItem1.Text = "Delete Command";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // Commands
             // 
@@ -116,8 +139,11 @@
             this.Controls.Add(this.commandTxt);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Commands";
+            this.ShowIcon = false;
             this.Text = "Commands";
+            this.rightClickContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -133,5 +159,7 @@
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader resultHeader;
         public System.Windows.Forms.ColumnHeader commandHeader;
+        private System.Windows.Forms.ContextMenuStrip rightClickContext;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

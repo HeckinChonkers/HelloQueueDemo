@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Configuration;
-using System.Xml;
+using System.IO;
 using DemoHelloQueue.Properties;
 
 namespace DemoHelloQueue
@@ -18,6 +18,8 @@ namespace DemoHelloQueue
         public bool enableDing = false;
         TwitchIRC _helloQueueConn;
         List<string> userList;
+        public List<string> quoteList;
+        public List<string> modList; 
         public static Dictionary<string, string> commandDict;
         public delegate void dgAddToList(object sender, IRCEventArgs e);
 
@@ -26,12 +28,44 @@ namespace DemoHelloQueue
             InitializeComponent();
             userList = new List<string>();
             getCommandDict();
+            getQuoteList();
+        }
+
+        private void getQuoteList()
+        {
+            quoteList = new List<string>();
+            string qteFilePath = Application.StartupPath + "\\quoteList.txt";
+            if (File.Exists(qteFilePath))
+            {
+                StreamReader qteFile = new StreamReader(qteFilePath);
+
+                string line;
+
+                while ((line = qteFile.ReadLine()) != null)
+                    quoteList.Add(line);
+
+                qteFile.Close();
+            }
         }
 
         private void getCommandDict()
         {
             commandDict = new Dictionary<string, string>();
             //For each command found in command file, add it to dictionary.
+            string cmdFilePath = Application.StartupPath + "\\cmdList.txt";
+            if (File.Exists(cmdFilePath))
+            {
+                StreamReader cmdFile = new StreamReader(cmdFilePath);
+                string line;
+                while((line = cmdFile.ReadLine()) != null)
+                {
+                    string command = line.Substring(0, line.IndexOf(':')).Trim();
+                    string result = line.Substring(line.IndexOf(':') + 1).Trim();
+                    commandDict.Add(command, result);
+                }
+                cmdFile.Close();
+            }
+
         }
 
         private void sendToQueue(object sender, IRCEventArgs e)
@@ -90,6 +124,7 @@ namespace DemoHelloQueue
         {
             if (TwitchIRCThread == null || !TwitchIRCThread.IsAlive)
             {
+                modList = new List<string>();
                 _helloQueueConn = new TwitchIRC(Globals.IrcServer, Globals.IrcPort, Globals.IrcUser, Globals.IrcChan, Globals.IrcPass);
                 _helloQueueConn.OnGotMessage += new TwitchIRC.RecievedMessage(sendToQueue);
                 _helloQueueConn.ConnectionLost += new TwitchIRC.lostConnection(lostConnection);
@@ -129,15 +164,16 @@ namespace DemoHelloQueue
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            bool commandFound;
+            string cmdFilePath = Application.StartupPath + "\\cmdList.txt";
+            TextWriter txtWriter = new StreamWriter(cmdFilePath);
 
             foreach (KeyValuePair<string, string> pair in commandDict)
             {
                 //For each command found, save it to a file.
-
+                txtWriter.WriteLine(pair.Key + ": " + pair.Value);
             }
 
-            
+            txtWriter.Close();
 
             formIsClosing = true;
             if (_helloQueueConn != null)
@@ -239,6 +275,11 @@ namespace DemoHelloQueue
         {
             Commands cmd = new Commands();
             cmd.Show();
+        }
+
+        private void editLoyaltySettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

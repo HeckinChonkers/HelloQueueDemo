@@ -62,14 +62,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
+    <Reference Include="System.Net" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="About.cs">
@@ -98,6 +93,13 @@
       <DependentUpon>HelloQueue.cs</DependentUpon>
     </Compile>
     <Compile Include="IRCEventArgs.cs" />
+    <Compile Include="LoyaltySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoyaltySettings.Designer.cs">
+      <DependentUpon>LoyaltySettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoyaltyTracker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwitchIRC.cs" />
@@ -113,6 +115,9 @@
     <EmbeddedResource Include="HelloQueue.resx">
       <DependentUpon>HelloQueue.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LoyaltySettings.resx">
+      <DependentUpon>LoyaltySettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -123,6 +128,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

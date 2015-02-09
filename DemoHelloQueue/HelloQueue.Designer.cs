@@ -34,6 +34,7 @@
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commandsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noDupUsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,7 +45,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.commandsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editLoyaltySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,7 +91,8 @@
             this.commandsToolStripMenuItem,
             this.resetToolStripMenuItem,
             this.noDupUsersToolStripMenuItem,
-            this.dingToolStripMenuItem});
+            this.dingToolStripMenuItem,
+            this.editLoyaltySettingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -98,14 +100,21 @@
             // configureToolStripMenuItem
             // 
             this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
-            this.configureToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.configureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.configureToolStripMenuItem.Text = "Configure";
             this.configureToolStripMenuItem.Click += new System.EventHandler(this.configureToolStripMenuItem_Click);
+            // 
+            // commandsToolStripMenuItem
+            // 
+            this.commandsToolStripMenuItem.Name = "commandsToolStripMenuItem";
+            this.commandsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.commandsToolStripMenuItem.Text = "Edit Commands";
+            this.commandsToolStripMenuItem.Click += new System.EventHandler(this.commandsToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.resetToolStripMenuItem.Text = "Reset Userlist";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -113,7 +122,7 @@
             // 
             this.noDupUsersToolStripMenuItem.CheckOnClick = true;
             this.noDupUsersToolStripMenuItem.Name = "noDupUsersToolStripMenuItem";
-            this.noDupUsersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.noDupUsersToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.noDupUsersToolStripMenuItem.Text = "No Dup. Users";
             this.noDupUsersToolStripMenuItem.Click += new System.EventHandler(this.noDupUsersToolStripMenuItem_Click);
             // 
@@ -121,7 +130,7 @@
             // 
             this.dingToolStripMenuItem.CheckOnClick = true;
             this.dingToolStripMenuItem.Name = "dingToolStripMenuItem";
-            this.dingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dingToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.dingToolStripMenuItem.Text = "Ding!";
             this.dingToolStripMenuItem.Click += new System.EventHandler(this.dingToolStripMenuItem_Click);
             // 
@@ -168,8 +177,7 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox1.Location = new System.Drawing.Point(12, 57);
             this.richTextBox1.Name = "richTextBox1";
@@ -181,6 +189,9 @@
             // 
             // richTextBox2
             // 
+            this.richTextBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox2.EnableAutoDragDrop = true;
             this.richTextBox2.Location = new System.Drawing.Point(12, 612);
             this.richTextBox2.Name = "richTextBox2";
@@ -189,12 +200,12 @@
             this.richTextBox2.Text = "";
             this.richTextBox2.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.richTextBox2_PreviewKeyDown);
             // 
-            // commandsToolStripMenuItem
+            // editLoyaltySettingsToolStripMenuItem
             // 
-            this.commandsToolStripMenuItem.Name = "commandsToolStripMenuItem";
-            this.commandsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.commandsToolStripMenuItem.Text = "Edit Commands";
-            this.commandsToolStripMenuItem.Click += new System.EventHandler(this.commandsToolStripMenuItem_Click);
+            this.editLoyaltySettingsToolStripMenuItem.Name = "editLoyaltySettingsToolStripMenuItem";
+            this.editLoyaltySettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editLoyaltySettingsToolStripMenuItem.Text = "Edit Loyalty Settings";
+            this.editLoyaltySettingsToolStripMenuItem.Click += new System.EventHandler(this.editLoyaltySettingsToolStripMenuItem_Click);
             // 
             // HelloQueue
             // 
@@ -239,6 +250,7 @@
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.ToolStripMenuItem commandsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editLoyaltySettingsToolStripMenuItem;
     }
 }
 

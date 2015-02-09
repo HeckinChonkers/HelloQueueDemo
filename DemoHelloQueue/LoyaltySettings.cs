@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace DemoHelloQueue
 {
-    public partial class About : Form
+    public partial class LoyaltySettings : Form
     {
-        public About()
+        public LoyaltySettings()
         {
             InitializeComponent();
         }
