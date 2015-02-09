@@ -4,6 +4,9 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Configuration;
+using System.Xml;
+using DemoHelloQueue.Properties;
 
 namespace DemoHelloQueue
 {
@@ -15,12 +18,20 @@ namespace DemoHelloQueue
         public bool enableDing = false;
         TwitchIRC _helloQueueConn;
         List<string> userList;
+        public static Dictionary<string, string> commandDict;
         public delegate void dgAddToList(object sender, IRCEventArgs e);
 
         public HelloQueue()
         {
             InitializeComponent();
             userList = new List<string>();
+            getCommandDict();
+        }
+
+        private void getCommandDict()
+        {
+            commandDict = new Dictionary<string, string>();
+            //For each command found in command file, add it to dictionary.
         }
 
         private void sendToQueue(object sender, IRCEventArgs e)
@@ -118,9 +129,22 @@ namespace DemoHelloQueue
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            bool commandFound;
+
+            foreach (KeyValuePair<string, string> pair in commandDict)
+            {
+                //For each command found, save it to a file.
+
+            }
+
+            
+
             formIsClosing = true;
-            _helloQueueConn.shouldRun = false;
-            _helloQueueConn.IrcReader.Close();
+            if (_helloQueueConn != null)
+            {
+                _helloQueueConn.shouldRun = false;
+                _helloQueueConn.IrcReader.Close();
+            }
             if (TwitchIRCThread != null && TwitchIRCThread.IsAlive)
             {
                 _helloQueueConn.RequestStop();
@@ -209,6 +233,12 @@ namespace DemoHelloQueue
                 _helloQueueConn.SendMessage(richTextBox2.Text.Trim());
                 richTextBox2.Clear();
             }
+        }
+
+        private void commandsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Commands cmd = new Commands();
+            cmd.Show();
         }
     }
 }

@@ -3,19 +3,22 @@
   <Profiles />
   <Settings>
     <Setting Name="IrcServer" Type="System.String" Scope="User">
-      <Value Profile="(Default)">irc.twitch.tv</Value>
-    </Setting>
-    <Setting Name="IrcChannel" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#cohhcarnage</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IrcUser" Type="System.String" Scope="User">
-      <Value Profile="(Default)">captaindooter</Value>
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="IrcChannel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IrcPass" Type="System.String" Scope="User">
-      <Value Profile="(Default)">oauth:cxq5ric38pl1bdbwkua6itdb9bnnjf</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IrcPort" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">6667</Value>
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="commandTest" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

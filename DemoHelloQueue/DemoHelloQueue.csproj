@@ -78,6 +78,12 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
+    <Compile Include="Commands.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Commands.Designer.cs">
+      <DependentUpon>Commands.cs</DependentUpon>
+    </Compile>
     <Compile Include="Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,6 +103,9 @@
     <Compile Include="TwitchIRC.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Commands.resx">
+      <DependentUpon>Commands.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Configuration.resx">
       <DependentUpon>Configuration.cs</DependentUpon>

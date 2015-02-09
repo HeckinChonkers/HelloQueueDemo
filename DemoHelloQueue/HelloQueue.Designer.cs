@@ -44,6 +44,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.commandsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,6 +87,7 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configureToolStripMenuItem,
+            this.commandsToolStripMenuItem,
             this.resetToolStripMenuItem,
             this.noDupUsersToolStripMenuItem,
             this.dingToolStripMenuItem});
@@ -96,14 +98,14 @@
             // configureToolStripMenuItem
             // 
             this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
-            this.configureToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.configureToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.configureToolStripMenuItem.Text = "Configure";
             this.configureToolStripMenuItem.Click += new System.EventHandler(this.configureToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.resetToolStripMenuItem.Text = "Reset Userlist";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -111,7 +113,7 @@
             // 
             this.noDupUsersToolStripMenuItem.CheckOnClick = true;
             this.noDupUsersToolStripMenuItem.Name = "noDupUsersToolStripMenuItem";
-            this.noDupUsersToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.noDupUsersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.noDupUsersToolStripMenuItem.Text = "No Dup. Users";
             this.noDupUsersToolStripMenuItem.Click += new System.EventHandler(this.noDupUsersToolStripMenuItem_Click);
             // 
@@ -119,7 +121,7 @@
             // 
             this.dingToolStripMenuItem.CheckOnClick = true;
             this.dingToolStripMenuItem.Name = "dingToolStripMenuItem";
-            this.dingToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.dingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.dingToolStripMenuItem.Text = "Ding!";
             this.dingToolStripMenuItem.Click += new System.EventHandler(this.dingToolStripMenuItem_Click);
             // 
@@ -187,6 +189,13 @@
             this.richTextBox2.Text = "";
             this.richTextBox2.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.richTextBox2_PreviewKeyDown);
             // 
+            // commandsToolStripMenuItem
+            // 
+            this.commandsToolStripMenuItem.Name = "commandsToolStripMenuItem";
+            this.commandsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.commandsToolStripMenuItem.Text = "Edit Commands";
+            this.commandsToolStripMenuItem.Click += new System.EventHandler(this.commandsToolStripMenuItem_Click);
+            // 
             // HelloQueue
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -229,6 +238,7 @@
         private System.Windows.Forms.ToolStripMenuItem dingToolStripMenuItem;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.ToolStripMenuItem commandsToolStripMenuItem;
     }
 }
 
