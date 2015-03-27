@@ -16,7 +16,6 @@ namespace DemoHelloQueue
 
         #region Public Variables
         public Timer UserCheckTimer;
-        
         #endregion
 
         #region Properties

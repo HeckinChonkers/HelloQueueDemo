@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -11,10 +12,27 @@ namespace DemoHelloQueue
 {
     public partial class Commands : Form
     {
+        public dbDataSet.changeBot_commandDataTable commandTable = new dbDataSet.changeBot_commandDataTable();
+
         public Commands()
         {
             InitializeComponent();
-            foreach (KeyValuePair<string, string> pair in HelloQueue.commandDict){
+            commandTable = HelloQueue.commandsTA.GetData();
+            foreach (DataRow row in commandTable)
+            {
+                if (!HelloQueue.commandDict.ContainsKey(row["trigger"].ToString()))
+                    HelloQueue.commandDict.Add(row["trigger"].ToString(), row["result"].ToString());
+            }
+
+            Dictionary<string, string> tempDict = new Dictionary<string,string>(HelloQueue.commandDict);
+
+            foreach (KeyValuePair<string, string> pair in tempDict){
+                if (!commandTable.Rows.Contains(pair.Key))
+                {
+                    HelloQueue.commandDict.Remove(pair.Key);
+                    HelloQueue.swabbotDB.changeBot_command.Rows.Remove(HelloQueue.swabbotDB.changeBot_command.Rows.Find(pair.Key.ToString()));
+                    continue;
+                }
                 string command = pair.Key;
                 string result = pair.Value;
                 string[] row = { command, result };
@@ -32,6 +50,10 @@ namespace DemoHelloQueue
                 string result = resultTxt.Text;
                 if (!HelloQueue.commandDict.ContainsKey(command))
                 {
+                    DataRow newRow = HelloQueue.swabbotDB.changeBot_command.NewRow();
+                    newRow[0] = command;
+                    newRow[1] = result;
+                    HelloQueue.swabbotDB.changeBot_command.Rows.Add(newRow);
                     HelloQueue.commandDict.Add(command, result);
                     string[] row = {command, result};
                     var lvi = new ListViewItem(row);
@@ -40,10 +62,18 @@ namespace DemoHelloQueue
                 }
                 else
                 {
+                    DataRow foundRow = HelloQueue.swabbotDB.changeBot_command.Rows.Find(command);
+
+                    if (foundRow != null)
+                    {
+                        foundRow[1] = resultTxt.Text;
+                    }
+
                     HelloQueue.commandDict[command] = resultTxt.Text;
                     int indexOfCommand = listView1.Items.IndexOfKey(command);
                     listView1.Items[indexOfCommand].SubItems[1].Text = resultTxt.Text;
                 }
+                HelloQueue.UpdateDB();
                 commandTxt.Clear();
                 resultTxt.Clear();
             }
@@ -79,7 +109,16 @@ namespace DemoHelloQueue
         {
             int indexOfCommand = listView1.FocusedItem.Index;
             HelloQueue.commandDict.Remove(listView1.Items[indexOfCommand].Name);
+            DataRow newRow = HelloQueue.swabbotDB.changeBot_command.Rows.Find(listView1.Items[indexOfCommand].Name);
+            int indexRow = HelloQueue.swabbotDB.changeBot_command.Rows.IndexOf(newRow);
+            HelloQueue.swabbotDB.changeBot_command.Rows[indexRow].Delete();
+            HelloQueue.UpdateDB();
             listView1.Items[indexOfCommand].Remove();
+        }
+
+        private void Commands_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            HelloQueue.UpdateDB();
         }
     }
 }

@@ -143,6 +143,7 @@
             this.Name = "Commands";
             this.ShowIcon = false;
             this.Text = "Commands";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Commands_FormClosing);
             this.rightClickContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

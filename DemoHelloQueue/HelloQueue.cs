@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Configuration;
 using System.IO;
 using DemoHelloQueue.Properties;
+using System.Data;
 
 namespace DemoHelloQueue
 {
@@ -21,6 +22,13 @@ namespace DemoHelloQueue
         public List<string> quoteList;
         public List<string> modList; 
         public static Dictionary<string, string> commandDict;
+        public static dbDataSet swabbotDB = new dbDataSet();
+        public static dbDataSetTableAdapters.changeBot_commandTableAdapter commandsTA =
+            new dbDataSetTableAdapters.changeBot_commandTableAdapter();
+        public static dbDataSetTableAdapters.changeBot_viewerTableAdapter viewersTA =
+            new dbDataSetTableAdapters.changeBot_viewerTableAdapter();
+        public static dbDataSetTableAdapters.changeBot_quoteTableAdapter quotesTA =
+            new dbDataSetTableAdapters.changeBot_quoteTableAdapter();
         public delegate void dgAddToList(object sender, IRCEventArgs e);
 
         public HelloQueue()
@@ -51,6 +59,15 @@ namespace DemoHelloQueue
         private void getCommandDict()
         {
             commandDict = new Dictionary<string, string>();
+            commandsTA.Fill(swabbotDB.changeBot_command);
+            DataTable commandTable = new DataTable();
+            commandTable = commandsTA.GetData();
+            foreach (DataRow row in commandTable.Rows)
+            {
+                commandDict.Add(row[0].ToString(), row[1].ToString());
+            }
+            /*
+            commandDict = new Dictionary<string, string>();
             //For each command found in command file, add it to dictionary.
             string cmdFilePath = Application.StartupPath + "\\cmdList.txt";
             if (File.Exists(cmdFilePath))
@@ -65,7 +82,7 @@ namespace DemoHelloQueue
                 }
                 cmdFile.Close();
             }
-
+            */
         }
 
         private void sendToQueue(object sender, IRCEventArgs e)
@@ -164,6 +181,12 @@ namespace DemoHelloQueue
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            UpdateDB();
+            commandsTA.Dispose();
+            quotesTA.Dispose();
+            viewersTA.Dispose();
+            swabbotDB.Dispose();
+            /*
             string cmdFilePath = Application.StartupPath + "\\cmdList.txt";
             TextWriter txtWriter = new StreamWriter(cmdFilePath);
 
@@ -185,7 +208,7 @@ namespace DemoHelloQueue
             {
                 _helloQueueConn.RequestStop();
                 TwitchIRCThread.Join();
-            }
+            } */
         }
 
         private void configureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -197,10 +220,10 @@ namespace DemoHelloQueue
         private void HelloQueue_Load(object sender, EventArgs e)
         {
             Globals.IrcServer = Properties.Settings.Default.IrcServer;
-             Globals.IrcUser = Properties.Settings.Default.IrcUser;
-             Globals.IrcChan = Properties.Settings.Default.IrcChannel;
-             Globals.IrcPass = Properties.Settings.Default.IrcPass;
-             Globals.IrcPort = Properties.Settings.Default.IrcPort;
+            Globals.IrcUser = Properties.Settings.Default.IrcUser;
+            Globals.IrcChan = Properties.Settings.Default.IrcChannel;
+            Globals.IrcPass = Properties.Settings.Default.IrcPass;
+            Globals.IrcPort = Properties.Settings.Default.IrcPort;
         }
 
         /*
@@ -281,5 +304,86 @@ namespace DemoHelloQueue
         {
 
         }
+
+        private static void ProcessDialogResult(DialogResult response)
+        {
+            switch (response)
+            {
+                case DialogResult.Yes:
+                    swabbotDB.Merge(tempCommandsDataTable, true, MissingSchemaAction.Ignore);
+                    UpdateDB();
+                    break;
+
+                case DialogResult.No:
+                    swabbotDB.Merge(tempCommandsDataTable);
+                    MessageBox.Show("Update cancelled");
+                    break;
+            }
+        }
+
+        public static void UpdateDB()
+        {
+            dbDataSet.changeBot_commandDataTable deletedCommands = (dbDataSet.changeBot_commandDataTable)swabbotDB.changeBot_command.GetChanges(DataRowState.Deleted);
+            dbDataSet.changeBot_commandDataTable addedCommands = (dbDataSet.changeBot_commandDataTable)swabbotDB.changeBot_command.GetChanges(DataRowState.Added);
+            dbDataSet.changeBot_commandDataTable modifiedCommands = (dbDataSet.changeBot_commandDataTable)swabbotDB.changeBot_command.GetChanges(DataRowState.Modified);
+
+            try
+            {
+                if (deletedCommands != null)
+                    commandsTA.Update(deletedCommands);
+
+                if (addedCommands != null)
+                    commandsTA.Update(addedCommands);
+
+                if (modifiedCommands != null)
+                    commandsTA.Update(modifiedCommands);
+
+                swabbotDB.AcceptChanges();
+            }
+            catch (DBConcurrencyException dbcx)
+            {
+                //swabbotDB.changeBot_command.Rows.Remove(dbcx.Row);
+                commandsTA.Insert(dbcx.Row["trigger"].ToString(), dbcx.Row["result"].ToString());
+                swabbotDB.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Update process error: " + ex.Message);
+            }
+
+        }
+
+        private static string CreateDBConcurrentMessage(dbDataSet.changeBot_commandRow cr)
+        {
+            return
+                "Database: " + GetRowData(GetCurrentRowInDB(cr), DataRowVersion.Default) + "\n" +
+                "Original: " + GetRowData(cr, DataRowVersion.Original) + "\n" +
+                "Proposed: " + GetRowData(cr, DataRowVersion.Current) + "\n" +
+                "Do you still want to update the database with the proposed value?";
+        }
+
+        private static dbDataSet.changeBot_commandDataTable tempCommandsDataTable = new dbDataSet.changeBot_commandDataTable();
+
+        private static dbDataSet.changeBot_commandRow GetCurrentRowInDB(dbDataSet.changeBot_commandRow RowWithError)
+        {
+            commandsTA.Fill(tempCommandsDataTable);
+
+            dbDataSet.changeBot_commandRow currentRowInDb =
+                tempCommandsDataTable.FindBytrigger(RowWithError.trigger);
+
+            return currentRowInDb;
+        }
+
+        private static string GetRowData(dbDataSet.changeBot_commandRow comRow, DataRowVersion RowVersion)
+        {
+            string rowData = "";
+
+            for (int i = 0; i < comRow.ItemArray.Length; i++)
+            {
+                rowData = rowData + comRow[i, RowVersion].ToString() + " ";
+            }
+            return rowData;
+        }
     }
+
 }
